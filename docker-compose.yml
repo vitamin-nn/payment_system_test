@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+    db:
+        image: mysql:8.0
+        container_name: "payment-test-db"
+        ports:
+            - "3306:3306"
+        env_file:
+            - configs/.env.docker
+        volumes:
+            - database-ps-test:/var/lib/mysql
+        networks:
+            - ps-test
+    migration:
+        image: ps-test/migration
+        depends_on:
+            - db
+        env_file:
+            - configs/.env.docker
+        environment:
+            - MYSQL_DB_HOST=db
+        networks:
+            - ps-test
+    server:
+        container_name: payment-server
+        image: ps-test/server
+        ports:
+            - "9090:9090"
+        depends_on:
+            - migration
+        env_file:
+            - configs/.env.docker
+        environment:
+            - MYSQL_DB_HOST=db
+        networks:
+            - ps-test
+
+volumes:
+    database-ps-test:
+
+networks:
+    ps-test:
