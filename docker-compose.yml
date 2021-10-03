@@ -25,6 +25,7 @@ services:
     server:
         container_name: payment-server
         image: ps-test/server
+        restart: always
         ports:
             - "9090:9090"
         depends_on:
