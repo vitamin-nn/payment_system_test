@@ -18,9 +18,12 @@ const limit = 100
 func GenerateCSVReport(ctx context.Context, dbRepo repo.Repo, userID string, beginTime, endTime time.Time, saveIn io.Writer) error {
 	writer := csv.NewWriter(saveIn)
 	defer writer.Flush()
-	writeHeader(writer)
+	err := writeHeader(writer)
+	if err != nil {
+		return err
+	}
 
-	err := dbRepo.ExecTx(ctx, func(q *db.Queries) error {
+	err = dbRepo.ExecTx(ctx, func(q *db.Queries) error {
 		w, err := q.GetWalletByUser(ctx, userID)
 		if err != nil {
 			return err

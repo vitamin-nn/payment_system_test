@@ -11,8 +11,6 @@ import (
 	"github.com/vitamin-nn/test_payment_system/server/internal/logger"
 )
 
-const maxFeedLen = 1000
-
 func Execute() {
 	cfg, err := config.Load()
 	if err != nil {

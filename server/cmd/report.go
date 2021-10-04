@@ -23,14 +23,21 @@ func reportCmd(cfg *config.Config) *cobra.Command {
 			if userID == "" {
 				log.Fatalf("unknown user id")
 			}
-			var t1, t2 time.Time
-			var err error
+
 			if beginTime == "" {
 				beginTime = "1970-01-01T00:00:00Z"
 			}
-			t1, err = time.Parse(time.RFC3339, beginTime)
+			t1, err := time.Parse(time.RFC3339, beginTime)
+			if err != nil {
+				log.Fatalf("can not parse begin_time: %v", err)
+			}
+
+			var t2 time.Time
 			if endTime != "" {
 				t2, err = time.Parse(time.RFC3339, endTime)
+				if err != nil {
+					log.Fatalf("can not parse end_time: %v", err)
+				}
 			}
 
 			if t2.IsZero() {
@@ -55,14 +62,19 @@ func reportCmd(cfg *config.Config) *cobra.Command {
 				defer f.Close()
 			}
 
-			report.GenerateCSVReport(context.Background(), sqlRepo, userID, t1, t2, f)
+			err = report.GenerateCSVReport(context.Background(), sqlRepo, userID, t1, t2, f)
+			if err != nil {
+				log.Fatalf("csv report generation error: %v", err)
+			}
 		},
 	}
 
 	command.Flags().StringVar(&userID, "user_id", "", "user_id=...")
-	command.MarkFlagRequired("user_id")
+	err := command.MarkFlagRequired("user_id")
+	if err != nil {
+		log.Fatalf("user_id required error: %v", err)
+	}
 	command.Flags().StringVar(&filename, "filename", "", "filename=...")
-	command.MarkFlagRequired("filename")
 	command.Flags().StringVar(&beginTime, "begin_time", "1970-01-01T00:00:00Z", "RFC3339: 2006-01-02T15:04:05Z07:00")
 	command.Flags().StringVar(&endTime, "end_time", "", "RFC3339: 2006-01-02T15:04:05Z07:00")
 
