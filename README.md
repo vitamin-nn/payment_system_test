@@ -36,7 +36,7 @@ Expected response:
 
 ```{"result":"ok"}```
 
-- Generating report
+- Report generation
 
 ```make report user_id=eca6ae47-4e7a-4d2a-ad39-710ad0aa357e begin_time=2021-10-03T08:43:01Z filename=/full/path/to/report.csv```
 
